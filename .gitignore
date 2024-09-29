@@ -1,0 +1,6 @@
+# Ignore binary, cmake and test generated files
+*~
+**/bin/**
+.vs/**
+**/obj/**
+*.log
