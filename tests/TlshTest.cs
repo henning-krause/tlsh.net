@@ -55,12 +55,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using Shouldly;
 
+[assembly: Parallelize]
+
 namespace TrendMicro.Tlsh;
+
+
 
 [TestClass]
 public class TlshTests

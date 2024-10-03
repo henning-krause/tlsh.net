@@ -95,14 +95,18 @@ namespace TrendMicro.Tlsh
 		/** Pearson's hash function. All inputs must be integers in the range [0, 255],
 	 * and the output will also be an integer in the range [0, 255] */
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static byte PearsonHash(byte salt, byte i, byte j, byte k)
+		public static byte PearsonHash(byte salt, in byte i, in byte j, in byte k)
 		{
-			var vTable = VTable;
-			var h = vTable[salt];
-			h = vTable[h ^ i];
-			h = vTable[h ^ j];
-			h = vTable[h ^ k];
-			return h;
+			unchecked
+			{
+
+				var vTable = VTable;
+				var h = vTable[salt];
+				h = vTable[h ^ i];
+				h = vTable[h ^ j];
+				h = vTable[h ^ k];
+				return h;
+			}
 		}
 
 //	/** Natural logarithm of 1.5 */

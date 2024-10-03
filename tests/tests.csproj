@@ -1,16 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net8.0;</TargetFrameworks>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
-
     <AssemblyName>tlsh.tests</AssemblyName>
-
     <SignAssembly>True</SignAssembly>
-
     <AssemblyOriginatorKeyFile>..\keyfile.key</AssemblyOriginatorKeyFile>
+      <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

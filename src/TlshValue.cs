@@ -88,6 +88,35 @@ namespace TrendMicro.Tlsh
 		/// <exception cref="ArgumentException">If the input string cannot be parsed.</exception>
 		public static TlshValue Parse(string input)
 		{
+			var (checksum, tmpCode, versionOption) = Initialize();
+
+			if (checksum == null)
+			{
+				throw new ArgumentException("Invalid hash string, length does not match any known encoding", nameof(input));
+			}
+
+			var offset = versionOption.Value.VersionString.Length;
+			for (var k = 0; k < checksum.Length; k++)
+			{
+				checksum[k] = TlshUtil.FromHexSwapped(input, offset);
+				offset += 2;
+			}
+
+			var lvalue = TlshUtil.FromHexSwapped(input, offset);
+			offset += 2;
+
+			var qRatios = TlshUtil.FromHex(input, offset);
+			offset += 2;
+
+			for (var i = 0; i < tmpCode.Length; i++)
+			{
+				// un-reverse the code during encoding
+				tmpCode[tmpCode.Length - i - 1] = TlshUtil.FromHex(input, offset);
+				offset += 2;
+			}
+
+			return new TlshValue(versionOption.Value, checksum, lvalue, qRatios >> 4, qRatios & 0xF, tmpCode);
+
 			(byte[] checksum, int[] tmpCode, VersionOption? versionOption) Initialize()
 			{
 				foreach (var bucketOption in AllBucketOptions)
@@ -119,35 +148,6 @@ namespace TrendMicro.Tlsh
 				return true;
 
 			}
-
-			var (checksum, tmpCode, versionOption) = Initialize();
-
-			if (checksum == null)
-			{
-				throw new ArgumentException("Invalid hash string, length does not match any known encoding", nameof(input));
-			}
-
-			var offset = versionOption.Value.VersionString.Length;
-			for (var k = 0; k < checksum.Length; k++)
-			{
-				checksum[k] = TlshUtil.FromHexSwapped(input, offset);
-				offset += 2;
-			}
-
-			var lvalue = TlshUtil.FromHexSwapped(input, offset);
-			offset += 2;
-
-			var qRatios = TlshUtil.FromHex(input, offset);
-			offset += 2;
-
-			for (var i = 0; i < tmpCode.Length; i++)
-			{
-				// un-reverse the code during encoding
-				tmpCode[tmpCode.Length - i - 1] = TlshUtil.FromHex(input, offset);
-				offset += 2;
-			}
-
-			return new TlshValue(versionOption.Value, checksum, lvalue, qRatios >> 4, qRatios & 0xF, tmpCode);
 		}
 
 		private static int HashStringLength(BucketOption bucketOption, ChecksumOption checksumOption, VersionOption versionOption) => versionOption.VersionString.Length + ((int)bucketOption / 2) + ((int)checksumOption * 2) + 4;

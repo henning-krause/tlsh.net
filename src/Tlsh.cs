@@ -119,13 +119,8 @@ namespace TrendMicro.Tlsh
 			_ChecksumArray = _ChecksumLength > 1 ? new byte[_ChecksumLength] : null;
 		}
 
-
-		/// <summary>
-		/// Add all the data in the given array to the current hash
-		/// </summary>
-		/// <param name="data">The data to add.</param>
-		public void Update(byte[] data) => Update(data, 0, (uint)data.Length);
-
+		public void Update(byte[] data, int offset, int length) => Update(new ReadOnlySpan<byte>(data, offset, length));
+		public void Update(byte[] data) => Update(new ReadOnlySpan<byte>(data));
 
 		/// <summary>
 		/// Add data in the given array to the current hash.
@@ -134,9 +129,8 @@ namespace TrendMicro.Tlsh
 		/// <param name="offset">The offset in the array to start reading from.</param>
 		/// <param name="length">How many bytes to read from the array.</param>
 		/// <exception cref="InvalidOperationException">The data hashed exceeds <see cref="MaxDataLength"/>.</exception>
-		public void Update(byte[] data, int offset, uint length)
+		public void Update(ReadOnlySpan<byte> data)
 		{
-			const int rngSize = SlidingWndSize;
 			// #define RNG_IDX(i) ((i+RNG_SIZE)%RNG_SIZE)
 
 			// Indexes into the sliding window. They cycle like
@@ -147,58 +141,82 @@ namespace TrendMicro.Tlsh
 			// 4 3 2 1 0
 			// 0 4 3 2 1
 			// and so on
-			var j = (int)(_DataLen % rngSize);
-			var j1 = (j - 1 + rngSize) % rngSize;
-			var j2 = (j - 2 + rngSize) % rngSize;
-			var j3 = (j - 3 + rngSize) % rngSize;
-			var j4 = (j - 4 + rngSize) % rngSize;
-
+			var j = (int)(_DataLen % SlidingWndSize);
+			var j1 = (j - 1 + SlidingWndSize) % SlidingWndSize;
+			var j2 = (j - 2 + SlidingWndSize) % SlidingWndSize;
+			var j3 = (j - 3 + SlidingWndSize) % SlidingWndSize;
+			var j4 = (j - 4 + SlidingWndSize) % SlidingWndSize;
 			
 			// The variables are all local for performance reasons.
-			var fedLen = _DataLen;
 			var checksumArray = _ChecksumArray;
 			var slideWindow = _SlideWindow;
 			var aBucket = _ABucket;
 			var checksum = _Checksum;
+
+#if NET48_OR_GREATER
 			var checksumLength = _ChecksumLength;
+#endif
 
-			for (var i = offset; i < offset + length; i++, fedLen++)
+			var boundary = 0;
+			if (_DataLen < 4)
 			{
-				slideWindow[j] = (byte)(data[i] & 0xFF);
-
-				if (fedLen >= 4)
+				boundary = (int) Math.Min(data.Length, 4 - _DataLen);
+				for (var i = 0; i < boundary; i++)
 				{
-					// only calculate when input >= 5 bytes
+					slideWindow[j] = data[i];
 
-					ref var slj = ref slideWindow[j];
-					ref var slj1 = ref slideWindow[j1];
-					checksum = TlshUtil.PearsonHash(0, slj, slj1, checksum);
-					if (checksumLength > 1)
-					{
-						checksumArray[0] = checksum;
-						for (var k = 1; k < checksumLength; k++)
-						{
-							// use calculated 1 byte checksums to expand the total checksum to 3 bytes
-							checksumArray[k] = TlshUtil.PearsonHash(checksumArray[k - 1], slj, slj1, checksumArray[k]);
-						}
-					}
-
-					ref var slj2 = ref slideWindow[j2];
-					var r = TlshUtil.PearsonHash(2, slj, slj1, slj2);
-					aBucket[r]++;
-					ref var slj3 = ref slideWindow[j3];
-					r = TlshUtil.PearsonHash(3, slj, slj1, slj3);
-					aBucket[r]++;
-					r = TlshUtil.PearsonHash(5, slj, slj2, slj3);
-					aBucket[r]++;
-					ref var slj4 = ref slideWindow[j4];
-					r = TlshUtil.PearsonHash(7, slj, slj2, slj4);
-					aBucket[r]++;
-					r = TlshUtil.PearsonHash(11, slj, slj1, slj4);
-					aBucket[r]++;
-					r = TlshUtil.PearsonHash(13, slj, slj3, slj4);
-					aBucket[r]++;
+					// rotate the sliding window indexes
+					var jTmp = j4;
+					j4 = j3;
+					j3 = j2;
+					j2 = j1;
+					j1 = j;
+					j = jTmp;
 				}
+			}
+#if NET48_OR_GREATER
+			var isLargeChecksum = checksumLength > 1;
+#else
+			var isLargeChecksum = _ChecksumLength > 1;
+#endif
+
+
+			for (var i = boundary; i < data.Length; i++)
+			{
+				slideWindow[j] = data[i];
+
+				ref var slj = ref slideWindow[j];
+				ref var slj1 = ref slideWindow[j1];
+				checksum = TlshUtil.PearsonHash(0, slj, slj1, checksum);
+				if (isLargeChecksum)
+				{
+					checksumArray[0] = checksum;
+#if NET48_OR_GREATER
+					for (var k = 1; k < checksumLength; k++)
+#else
+					for (var k = 1; k < _ChecksumLength; k++)
+#endif
+					{
+						// use calculated 1 byte checksums to expand the total checksum to 3 bytes
+						checksumArray[k] = TlshUtil.PearsonHash(checksumArray[k - 1], slj, slj1, checksumArray[k]);
+					}
+				}
+
+				ref var slj2 = ref slideWindow[j2];
+				var r = TlshUtil.PearsonHash(2, slj, slj1, slj2);
+				aBucket[r]++;
+				ref var slj3 = ref slideWindow[j3];
+				r = TlshUtil.PearsonHash(3, slj, slj1, slj3);
+				aBucket[r]++;
+				r = TlshUtil.PearsonHash(5, slj, slj2, slj3);
+				aBucket[r]++;
+				ref var slj4 = ref slideWindow[j4];
+				r = TlshUtil.PearsonHash(7, slj, slj2, slj4);
+				aBucket[r]++;
+				r = TlshUtil.PearsonHash(11, slj, slj1, slj4);
+				aBucket[r]++;
+				r = TlshUtil.PearsonHash(13, slj, slj3, slj4);
+				aBucket[r]++;
 
 				// rotate the sliding window indexes
 				var jTmp = j4;
@@ -210,13 +228,15 @@ namespace TrendMicro.Tlsh
 			}
 
 			_Checksum = checksum;
-			_DataLen += length;
+			_DataLen += (uint) data.Length;
 
 			if (_DataLen > MaxDataLength)
 			{
-				throw new InvalidOperationException("Too much data has been hashed");
+				ThrowInvalidOperationException();
 			}
 		}
+
+		private static void ThrowInvalidOperationException() => throw new InvalidOperationException("Too much data has been hashed");
 
 		/// <summary>
 		/// Find quartiles based on current buckets.

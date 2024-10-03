@@ -95,7 +95,7 @@ namespace TrendMicro.Tlsh
 		public override int HashSize { get; }
 
 		/// <inheritdoc />
-		protected override void HashCore(byte[] array, int ibStart, int cbSize) => _Tlsh.Update(array, ibStart, (uint) cbSize);
+		protected override void HashCore(byte[] array, int ibStart, int cbSize) => _Tlsh.Update(array.AsSpan(ibStart, cbSize));
 
 		/// <inheritdoc />
 		protected override byte[] HashFinal() => _Tlsh.TryGetHash(out var hash, _ForceHashCreation) ? hash.ToByteArray() : Array.Empty<byte>();

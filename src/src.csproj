@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>net8.0;net48</TargetFrameworks>
 		<AssemblyName>Tlsh</AssemblyName>
 		<RootNamespace>TrendMicro.Tlsh</RootNamespace>
 		<LangVersion>9.0</LangVersion>
@@ -28,6 +28,9 @@
 	  <None Include="LICENSE" PackagePath="" Pack="true">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+		<PackageReference Include="System.Memory" Version="4.5.5" />
 	</ItemGroup>
 
 </Project>
