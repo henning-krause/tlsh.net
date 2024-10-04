@@ -3,7 +3,7 @@
 		<TargetFrameworks>net8.0;net48</TargetFrameworks>
 		<AssemblyName>Tlsh</AssemblyName>
 		<RootNamespace>TrendMicro.Tlsh</RootNamespace>
-		<LangVersion>9.0</LangVersion>
+		<LangVersion>Latest</LangVersion>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageId>$(AssemblyName).net</PackageId>
 		<Authors>Henning Krause</Authors>
@@ -15,16 +15,22 @@
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/trendmicro/tlsh.git</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/trendmicro/tlsh</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/henning-krause/tlsh.net.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/henning-krause/tlsh.net</PackageProjectUrl>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\keyfile.key</AssemblyOriginatorKeyFile>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<FileVersion>1.0.2.0</FileVersion>
-		<AssemblyVersion>1.0.2.0</AssemblyVersion>
+		<FileVersion>2.0.1.0</FileVersion>
+		<AssemblyVersion>2.0.1.0</AssemblyVersion>
 		<Version>$(AssemblyVersion)</Version>
+		<Title>Tlsh.NET</Title>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Include="..\README.md" Link="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Include="LICENSE" PackagePath="" Pack="true">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
