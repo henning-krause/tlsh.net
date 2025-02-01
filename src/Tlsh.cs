@@ -180,7 +180,6 @@ namespace TrendMicro.Tlsh
 			var isLargeChecksum = _ChecksumLength > 1;
 #endif
 
-
 			for (var i = boundary; i < data.Length; i++)
 			{
 				slideWindow[j] = data[i];

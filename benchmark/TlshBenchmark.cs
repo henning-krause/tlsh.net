@@ -2,15 +2,11 @@
 using BenchmarkDotNet.Jobs;
 using TrendMicro.Tlsh;
 
-[SimpleJob(RuntimeMoniker.Net48, baseline: true)]
-[SimpleJob(RuntimeMoniker.Net80)]
-[SimpleJob(RuntimeMoniker.NativeAot90)]
-[SimpleJob(RuntimeMoniker.Net90)]
-[RPlotExporter]
+[SimpleJob(RuntimeMoniker.Net90, baseline: true)]
 [MemoryDiagnoser]
 public class TlshBenchmark
 {
-	private byte[] data;
+	private byte[]? data;
 
 	[Params(1000, 10_000, 1_000_000)]
 	public int N;

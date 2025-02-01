@@ -2,15 +2,15 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net8.0;net480</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>Latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
-		<PackageReference Include="BenchmarkDotNet.Annotations" Version="0.14.0" />
+		<PackageReference Include="BenchmarkDotNet" Version="0.14.1-nightly.20250107.205" />
+		<PackageReference Include="BenchmarkDotNet.Annotations" Version="0.14.1-nightly.20250107.205" />
 	</ItemGroup>
 
 	<ItemGroup>

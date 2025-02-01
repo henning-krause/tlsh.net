@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net48</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net48</TargetFrameworks>
 		<AssemblyName>Tlsh</AssemblyName>
 		<RootNamespace>TrendMicro.Tlsh</RootNamespace>
 		<LangVersion>Latest</LangVersion>
@@ -20,8 +20,8 @@
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\keyfile.key</AssemblyOriginatorKeyFile>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<FileVersion>2.0.1.0</FileVersion>
-		<AssemblyVersion>2.0.1.0</AssemblyVersion>
+		<FileVersion>2.0.2.0</FileVersion>
+		<AssemblyVersion>2.0.2.0</AssemblyVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<Title>Tlsh.NET</Title>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -36,7 +36,7 @@
 	  </None>
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-		<PackageReference Include="System.Memory" Version="4.5.5" />
+		<PackageReference Include="System.Memory" Version="4.6.0" />
 	</ItemGroup>
 
 </Project>

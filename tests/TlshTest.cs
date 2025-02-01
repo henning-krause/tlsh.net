@@ -58,6 +58,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Shouldly;
+using System.IO;
 
 [assembly: Parallelize]
 
@@ -374,7 +375,7 @@ public class TlshTests
 
 		singleUpdateHash.ToString().ShouldBe(multipleUpdatesHash.ToString());
 	}
-
+	
 	[TestMethod]
 	public void Test_from_encoded_string_128_1()
 	{
